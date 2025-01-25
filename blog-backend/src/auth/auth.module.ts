@@ -8,19 +8,20 @@ import { AuthController } from './auth.controller';
 import { FacebookStrategy } from './strategies/facebook.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { User } from './entities/user.entity';
+import { JwtStrategy } from 'src/common/guards/jwt.strategy';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: process.env.JWT_EXPIRATION || '1h' },
     }),
     TypeOrmModule.forFeature([User]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, GoogleStrategy, FacebookStrategy],
+  providers: [AuthService, GoogleStrategy, FacebookStrategy, JwtStrategy],
   exports: [TypeOrmModule],
 })
 export class AuthModule {}

@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PostsService } from './posts.service';
@@ -23,8 +24,9 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createPost(@Body() createPostDto: CreatePostDto) {
-    return this.postsService.create(createPostDto);
+  async createPost(@Body() createPostDto: CreatePostDto, @Request() req: any) {
+    const userId = req.user.id;
+    return this.postsService.create({ ...createPostDto, userId });
   }
 
   @Get(':id')
@@ -37,13 +39,26 @@ export class PostsController {
   async updatePost(
     @Param('id') id: string,
     @Body() updatePostDto: CreatePostDto,
+    @Request() req: any,
   ) {
-    return this.postsService.update(id, updatePostDto);
+    const userId = req.user.id;
+    return this.postsService.update(id, { ...updatePostDto, userId });
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async deletePost(@Param('id') id: string) {
-    return this.postsService.delete(id);
+  async deletePost(@Param('id') id: string, @Request() req: any) {
+    const userId = req.user.id;
+    return this.postsService.delete(id, userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('bulk')
+  async createBulkPosts(
+    @Body() createPostDtos: CreatePostDto[],
+    @Request() req: any,
+  ) {
+    const userId = req.user.id;
+    return this.postsService.createBulk(createPostDtos, userId);
   }
 }

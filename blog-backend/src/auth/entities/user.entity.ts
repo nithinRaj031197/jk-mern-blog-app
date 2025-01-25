@@ -1,5 +1,5 @@
+import { Post } from 'src/posts/entities/post.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Post } from '../../posts/entities/post.entity';
 
 @Entity('users')
 export class User {
@@ -7,10 +7,10 @@ export class User {
   id: string;
 
   @Column({ nullable: true })
-  googleId: string;
+  googleId?: string;
 
   @Column({ nullable: true })
-  facebookId: string;
+  facebookId?: string;
 
   @Column({ unique: true })
   email: string;
